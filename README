@@ -1,0 +1,25 @@
+
+
+//Verb	URI	Action	Route Name
+//GET	      /photos                   index	photos.index
+//POST	      /photos	                store	photos.store
+//GET	      /photos/{photo}	        show	photos.show
+//PUT/PATCH   /photos/{photo}	        update	photos.update
+//DELETE	  /photos/{photo}	        destroy	photos.destroy
+
+
+User: store, update, destroy
+Award: index, store, show, update, destroy
+Shop: index, store, show, update, destroy
+Purchase: index, store, update, destroy
+Achieved: store, index
+
+
+page Transaction = Purchase + Achieved order
+
+
+
+
+
+Tip
+Purchase's requests update and destroy are available for only 10 minutes after the store
