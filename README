@@ -11,7 +11,7 @@
 User: store, update, destroy
 Award: index, store, show, update, destroy
 Shop: index, store, show, update, destroy
-Purchase: index, store, update, destroy
+Purchase: index(id user), store, update, destroy
 Achieved: store, index
 
 

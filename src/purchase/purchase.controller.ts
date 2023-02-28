@@ -3,7 +3,7 @@ import { PurchaseService } from './purchase.service';
 import { CreatePurchaseDto } from './dto/create-purchase.dto';
 import { UpdatePurchaseDto } from './dto/update-purchase.dto';
 
-@Controller('purchase')
+@Controller('purchases')
 export class PurchaseController {
   constructor(private readonly purchaseService: PurchaseService) {}
 
@@ -31,4 +31,7 @@ export class PurchaseController {
   remove(@Param('id') id: string) {
     return this.purchaseService.remove(+id);
   }
+
+  // L'ho trovato qua
+  // https://www.mscharhag.com/api-design/rest-one-to-many-relations
 }

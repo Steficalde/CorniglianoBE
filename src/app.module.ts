@@ -6,6 +6,8 @@ import { ConfigModule } from '@nestjs/config';
 import { ShopModule } from './shop/shop.module';
 import { PurchaseModule } from './purchase/purchase.module';
 import { AwardModule } from './award/award.module';
+import { AwardUserModule } from './award-user/award-user.module';
+import {TestModule} from "./test/test.module";
 
 @Module({
   imports: [
@@ -18,6 +20,8 @@ import { AwardModule } from './award/award.module';
     ShopModule,
     PurchaseModule,
     AwardModule,
+    AwardUserModule,
+    TestModule,
   ],
 })
 export class AppModule {}

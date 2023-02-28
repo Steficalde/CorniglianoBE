@@ -7,4 +7,9 @@ export class CreateShopDto {
   address: string;
   @IsString()
   googleMaps: string;
+  @IsString()
+  @IsNotEmpty()
+  name: string;
+  @IsString()
+  description: string;
 }

@@ -35,6 +35,8 @@ export class ShopService {
         isActive: true,
         address: createShopDto.address,
         googleMaps: createShopDto.googleMaps,
+        description: createShopDto.description,
+        name: createShopDto.name
       },
     });
   }
@@ -54,7 +56,7 @@ export class ShopService {
   async update(
     id: number,
     updateUserDto: UpdateUserDto,
-    updateShopDto: CreateShopDto,
+    updateShopDto: UpdateShopDto,
   ) {
     const shopUpdated = await this.prisma.shop.update({
       where: {
@@ -64,6 +66,8 @@ export class ShopService {
         address: updateShopDto.address,
         googleMaps: updateShopDto.googleMaps,
         isActive: updateShopDto.isActive,
+        description: updateShopDto.description,
+        name: updateShopDto.name
       },
     });
     const userUpdated = await this.prisma.user.update({

@@ -16,7 +16,6 @@ export class UserService {
   }
 
   async update(id: number, updateUserDto: UpdateUserDto) {
-    const hash = await argon.hash(updateUserDto.password);
     this.prisma.user.update({
       where: {
         id: id,
@@ -35,6 +34,34 @@ export class UserService {
     return this.prisma.user.delete({
       where: {
         id: id,
+      },
+    });
+  }
+
+  findTransactions(id: number) {
+    // Ordinare
+    // Caricamento progressivo
+    return this.findAchieveds(id) && this.findPurchases(id);
+  }
+
+  findPurchases(id: number) {
+    return this.prisma.purchase.findMany({
+      where: {
+        userId: id,
+      },
+    });
+  }
+
+  findAchieveds(id: number) {
+    return this.prisma.award.findMany({
+      where: {
+        users: {
+          some: {
+            user: {
+              id: id,
+            },
+          },
+        },
       },
     });
   }

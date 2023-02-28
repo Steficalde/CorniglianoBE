@@ -9,27 +9,16 @@ services:
       POSTGRES_PASSWORD: 123
       POSTGRES_DB: nest
     networks:
-      - siringo
-#  shadow-dev-db:
-#    image: postgres:13
-#    ports:
-#      - 5435:5432
-#    environment:
-#      POSTGRES_USER: postgres
-#      POSTGRES_PASSWORD: 123
-#      POSTGRES_DB: shadow_nest
-#    networks:
-#      - freecodecamp
-
-#  test-db:
-#    image: postgres:13
-#    ports:
-#      - 5435:5432
-#    environment:
-#      POSTGRES_USER: postgres
-#      POSTGRES_PASSWORD: 123
-#      POSTGRES_DB: nest
-#    networks:
-#      - freecodecamp
+      - civ-cornigliano
+  shadow-dev-db:
+    image: postgres:13
+    ports:
+      - 5435:5432
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 123
+      POSTGRES_DB: shadow_nest
+    networks:
+      - civ-cornigliano
 networks:
-  siringo:
+  civ-cornigliano:
