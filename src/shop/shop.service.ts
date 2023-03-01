@@ -29,7 +29,7 @@ export class ShopService {
     }
 
     //creo lo shop collegato all'utente
-    const shop = await this.prisma.shop.create({
+    await this.prisma.shop.create({
       data: {
         id: user.id,
         isActive: true,
@@ -58,7 +58,7 @@ export class ShopService {
     updateUserDto: UpdateUserDto,
     updateShopDto: UpdateShopDto,
   ) {
-    const shopUpdated = await this.prisma.shop.update({
+    await this.prisma.shop.update({
       where: {
         id: id,
       },
@@ -70,7 +70,7 @@ export class ShopService {
         name: updateShopDto.name
       },
     });
-    const userUpdated = await this.prisma.user.update({
+    await this.prisma.user.update({
       where: {
         id: id,
       },

@@ -17,9 +17,7 @@ Achieved: store, index
 
 page Transaction = Purchase + Achieved order
 
-
-
-
-
 Tip
 Purchase's requests update and destroy are available for only 10 minutes after the store
+
+Application

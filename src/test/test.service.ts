@@ -1,18 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
-
 import * as argon from 'argon2';
 
 @Injectable()
 export class TestService {
   constructor(private prisma: PrismaService) {}
 
-  /*
-  *
-  *  DEVELOP RESET
-  *
-  *
-  */
   async reset() {
     // run prisma migrate reset
     await this.prisma.user.createMany({
@@ -47,25 +40,20 @@ export class TestService {
           id: 100,
           googleMaps: "google mappa",
           address: "corso cornigliano 7",
-          name: "gino",
-          description: "ginogino"
+          name: "shop uno",
+          description: "1 ginogino"
         },
         {
           id: 101,
           isActive: false,
           googleMaps: "google mappa",
           address: "corso magellano 14",
-          name: "gino",
-          description: "ginogino"
+          name: "shop due",
+          description: "2 ginogino"
         }
       ],
-    })
-  }
-  /*
-  *
-  *  DEVELOP RESET
-  *
-  *
-  */
+    });
 
+    return "reset";
+  }
 }

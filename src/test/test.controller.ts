@@ -6,11 +6,9 @@ import { TestService } from './test.service';
 export class TestController {
   constructor(private readonly testService: TestService) {}
 
-
-  @Get('retest')
+  @Get('reset')
   reset() {
-    this.testService.reset();
-    return "porcoiltudio";
+    return this.testService.reset();
   }
 
 }
