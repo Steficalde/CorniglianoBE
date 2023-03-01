@@ -22,10 +22,6 @@ export class AwardUserController {
     return this.awardUserService.findOne(+id);
   }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateAwardUserDto: UpdateAwardUserDto) {
-    return this.awardUserService.update(+id, updateAwardUserDto);
-  }
 
   @Delete(':id')
   remove(@Param('id') id: string) {

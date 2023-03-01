@@ -1,15 +1,14 @@
-import {ForbiddenException, Injectable} from '@nestjs/common';
+import { ForbiddenException, Injectable } from '@nestjs/common';
 import { CreateAwardDto } from './dto/create-award.dto';
 import { UpdateAwardDto } from './dto/update-award.dto';
-import {CreateUserDto} from "../user/dto/create-user.dto";
-import * as argon from "argon2";
-import {Award, User} from "@prisma/client";
-import {PrismaService} from "../prisma/prisma.service";
+import { CreateUserDto } from '../user/dto/create-user.dto';
+import * as argon from 'argon2';
+import { Award, User } from '@prisma/client';
+import { PrismaService } from '../prisma/prisma.service';
 
 @Injectable()
 export class AwardService {
-  constructor(private prisma: PrismaService) {
-  }
+  constructor(private prisma: PrismaService) {}
   async create(createAwardDto: CreateAwardDto) {
     let award: Award;
     try {
@@ -27,7 +26,6 @@ export class AwardService {
       throw error;
     }
     return award;
-
   }
 
   findAll() {
@@ -43,11 +41,20 @@ export class AwardService {
   }
 
   update(id: number, updateAwardDto: UpdateAwardDto) {
-    return `This action updates a #${id} award`;
+    this.prisma.award.update({
+      where: {
+        id: id,
+      },
+      data: {
+        title: updateAwardDto.title,
+        description: updateAwardDto.description,
+        quantity: updateAwardDto.quantity,
+      },
+    });
   }
 
   remove(id: number) {
-     this.prisma.award.delete({
+    this.prisma.award.delete({
       where: {
         id: id,
       },
