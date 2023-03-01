@@ -6,29 +6,16 @@ import * as argon from 'argon2';
 import { PrismaService } from '../prisma/prisma.service';
 import { User } from '@prisma/client';
 import { UpdateUserDto } from '../user/dto/update-user.dto';
+import { UserService } from '../user/user.service';
 
 @Injectable()
 export class ShopService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    private userService: UserService,
+  ) {}
   async create(createUserDto: CreateUserDto, createShopDto: CreateShopDto) {
-    //creo l'utente
-    const hash = await argon.hash(createUserDto.password);
-    let user: User;
-    try {
-      user = await this.prisma.user.create({
-        data: {
-          email: createUserDto.email,
-          hash,
-        },
-      });
-    } catch (error) {
-      if (error.code === 'P2002') {
-        throw new ForbiddenException('Credentials taken');
-      }
-      throw error;
-    }
-
-    //creo lo shop collegato all'utente
+    const user = await this.userService.create(createUserDto);
     await this.prisma.shop.create({
       data: {
         id: user.id,
@@ -36,7 +23,7 @@ export class ShopService {
         address: createShopDto.address,
         googleMaps: createShopDto.googleMaps,
         description: createShopDto.description,
-        name: createShopDto.name
+        name: createShopDto.name,
       },
     });
   }
@@ -67,21 +54,10 @@ export class ShopService {
         googleMaps: updateShopDto.googleMaps,
         isActive: updateShopDto.isActive,
         description: updateShopDto.description,
-        name: updateShopDto.name
+        name: updateShopDto.name,
       },
     });
-    await this.prisma.user.update({
-      where: {
-        id: id,
-      },
-      data: {
-        email: updateUserDto.email,
-        hash:
-          updateUserDto.password != null
-            ? await argon.hash(updateUserDto.password)
-            : undefined,
-      },
-    });
+    await this.userService.update(id,updateUserDto);
   }
 
   remove(id: number) {

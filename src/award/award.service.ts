@@ -1,19 +1,45 @@
-import { Injectable } from '@nestjs/common';
+import {ForbiddenException, Injectable} from '@nestjs/common';
 import { CreateAwardDto } from './dto/create-award.dto';
 import { UpdateAwardDto } from './dto/update-award.dto';
+import {CreateUserDto} from "../user/dto/create-user.dto";
+import * as argon from "argon2";
+import {Award, User} from "@prisma/client";
+import {PrismaService} from "../prisma/prisma.service";
 
 @Injectable()
 export class AwardService {
-  create(createAwardDto: CreateAwardDto) {
-    return 'This action adds a new award';
+  constructor(private prisma: PrismaService) {
+  }
+  async create(createAwardDto: CreateAwardDto) {
+    let award: Award;
+    try {
+      award = await this.prisma.award.create({
+        data: {
+          title: createAwardDto.title,
+          description: createAwardDto.description,
+          quantity: createAwardDto.quantity,
+        },
+      });
+    } catch (error) {
+      if (error.code === 'P2002') {
+        throw new ForbiddenException('Credentials taken');
+      }
+      throw error;
+    }
+    return award;
+
   }
 
   findAll() {
-    return `This action returns all award`;
+    return this.prisma.award.findMany();
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} award`;
+  async findOne(id: number) {
+    return this.prisma.award.findUnique({
+      where: {
+        id: id,
+      },
+    });
   }
 
   update(id: number, updateAwardDto: UpdateAwardDto) {
@@ -21,6 +47,10 @@ export class AwardService {
   }
 
   remove(id: number) {
-    return `This action removes a #${id} award`;
+     this.prisma.award.delete({
+      where: {
+        id: id,
+      },
+    });
   }
 }
