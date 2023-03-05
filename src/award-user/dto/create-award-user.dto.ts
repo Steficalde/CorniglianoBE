@@ -1,10 +1,11 @@
-import { IsNotEmpty, IsNumber } from 'class-validator';
+
+import { IsNotEmpty, IsNumber } from "class-validator";
 
 export class CreateAwardUserDto {
-  @IsNumber()
   @IsNotEmpty()
+  @IsNumber()
   userId: number;
-  @IsNumber()
   @IsNotEmpty()
+  @IsNumber()
   awardId: number;
 }

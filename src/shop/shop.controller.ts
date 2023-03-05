@@ -5,8 +5,8 @@ import {
   Body,
   Patch,
   Param,
-  Delete,
-} from '@nestjs/common';
+  Delete, Query
+} from "@nestjs/common";
 import { ShopService } from './shop.service';
 import { CreateShopDto } from './dto/create-shop.dto';
 import { UpdateShopDto } from './dto/update-shop.dto';
@@ -26,8 +26,8 @@ export class ShopController {
   }
 
   @Get()
-  findAll() {
-    return this.shopService.findAll();
+  findAll(@Query('cursor') cursor?: number,) {
+    return this.shopService.findAll(cursor);
   }
 
   @Get(':id')

@@ -1,8 +1,8 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from "@nestjs/common";
 import { CreateAwardUserDto } from './dto/create-award-user.dto';
 import { UpdateAwardUserDto } from './dto/update-award-user.dto';
 import { PrismaService } from '../prisma/prisma.service';
-import { Award } from '@prisma/client';
+import * as http from "http";
 
 @Injectable()
 export class AwardUserService {
@@ -13,7 +13,7 @@ export class AwardUserService {
         id: createAwardUserDto.awardId,
       },
     });
-    if (award && award.quantity >= 1) {
+    if (award.quantity >= 1) {
       //decremento
       this.prisma.award.update({
         where: {
@@ -32,6 +32,8 @@ export class AwardUserService {
           awardId: createAwardUserDto.awardId,
         },
       });
+    } else {
+      throw new HttpException('Not available', HttpStatus.UNPROCESSABLE_ENTITY);
     }
   }
 

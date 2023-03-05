@@ -28,8 +28,56 @@ export class ShopService {
     });
   }
 
-  findAll() {
-    return this.prisma.shop.findMany();
+  async findAll(cursor?: number) {
+    const results = 3;
+    const data =
+      cursor == null
+        ? await this.prisma.shop.findMany({
+            take: results,
+            where: {
+              isActive: true,
+            },
+            select: {
+              id: true,
+              name: true,
+              user: {
+                select: {
+                  avatar: true,
+                },
+              },
+            },
+            orderBy: {
+              id: 'desc',
+            },
+          })
+        : await this.prisma.shop.findMany({
+            take: results,
+            skip: 1, // Skip the cursor
+            cursor: {
+              id: +cursor,
+            },
+            where: {
+              isActive: true,
+            },
+            select: {
+              id: true,
+              name: true,
+              user: {
+                select: {
+                  avatar: true,
+                },
+              },
+            },
+            orderBy: {
+              id: 'desc',
+            },
+          });
+
+
+    return {
+      cursor: data[data.length - 1].id,
+      data: data,
+    }
   }
 
   findOne(id: number) {
@@ -57,7 +105,7 @@ export class ShopService {
         name: updateShopDto.name,
       },
     });
-    await this.userService.update(id,updateUserDto);
+    await this.userService.update(id, updateUserDto);
   }
 
   remove(id: number) {

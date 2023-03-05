@@ -6,6 +6,7 @@ CREATE TABLE "awards" (
     "title" TEXT NOT NULL,
     "description" TEXT,
     "quantity" INTEGER NOT NULL DEFAULT 0,
+    "cost" INTEGER NOT NULL DEFAULT 100,
 
     CONSTRAINT "awards_pkey" PRIMARY KEY ("id")
 );
@@ -25,6 +26,8 @@ CREATE TABLE "purchases" (
 CREATE TABLE "shops" (
     "id" INTEGER NOT NULL,
     "isActive" BOOLEAN NOT NULL DEFAULT true,
+    "name" TEXT NOT NULL,
+    "description" TEXT,
     "address" TEXT,
     "googleMaps" TEXT,
 
@@ -36,6 +39,7 @@ CREATE TABLE "users" (
     "id" SERIAL NOT NULL,
     "email" TEXT NOT NULL,
     "hash" TEXT NOT NULL,
+    "avatar" TEXT,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
@@ -45,7 +49,7 @@ CREATE TABLE "users" (
 -- CreateTable
 CREATE TABLE "award_user" (
     "id" SERIAL NOT NULL,
-    "redeemed_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "redeemedAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "userId" INTEGER NOT NULL,
     "awardId" INTEGER NOT NULL,
 

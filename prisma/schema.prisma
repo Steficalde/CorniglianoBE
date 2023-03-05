@@ -6,9 +6,8 @@ generator client {
 }
 
 datasource db {
-  provider          = "postgresql"
-  url               = env("DATABASE_URL")
-  shadowDatabaseUrl = env("SHADOW_DATABASE_URL")
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
 }
 
 // Entità
@@ -21,15 +20,16 @@ model Award {
   title       String
   description String?
   quantity    Int         @default(0)
+  cost        Int         @default(100)
   users       AwardUser[]
 
   @@map("awards")
 }
 
 model Purchase {
-  id          Int      @id @default(autoincrement())
-  purchasedAt DateTime @default(now())
-  points      Int
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  points    Int
 
   shopId Int
   shop   Shop @relation(fields: [shopId], references: [id])
@@ -57,7 +57,7 @@ model User {
   id        Int      @id @default(autoincrement())
   email     String   @unique
   hash      String
-  avarar    String?
+  avatar    String?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -71,8 +71,8 @@ model User {
 // tabelle Many to Many
 
 model AwardUser {
-  id          Int      @id @default(autoincrement())
-  redeemed_at DateTime @default(now())
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
 
   userId Int
   user   User @relation(fields: [userId], references: [id])

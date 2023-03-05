@@ -12,11 +12,12 @@ export class AuthController {
   // private equal to declare out of the const and after this.x = x
   constructor(private authService: AuthService) {}
 
+  @HttpCode(HttpStatus.OK)
   @Post('signin')
   signin(@Body() dto: AuthDto) {
     return this.authService.signin(dto);
   }
-  @HttpCode(HttpStatus.OK)
+
   @Post('signup')
   signup(@Body() dto: AuthDto) {
     // nextjs know daatype

@@ -8,10 +8,10 @@ export class PrismaService extends PrismaClient {
     super({
       datasources: {
         db: {
-          //next we need the dotenv
           url: config.get('DATABASE_URL'),
         },
       },
+      // log: ['query'] // See the query
     });
   }
 }

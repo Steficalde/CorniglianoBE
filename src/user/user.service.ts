@@ -3,7 +3,9 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import * as argon from 'argon2';
-import {User} from "@prisma/client";
+import { User } from '@prisma/client';
+import { Purchase } from '../purchase/entities/purchase.entity';
+import { Award } from '../award/entities/award.entity';
 
 @Injectable()
 export class UserService {
@@ -58,31 +60,155 @@ export class UserService {
     });
   }
 
-  findTransactions(id: number) {
-    // Ordinare
-    // Caricamento progressivo
-    return this.findAchieveds(id) && this.findPurchases(id);
-  }
+  // This function use a cursor
+  async findTransactions(
+    id: number,
+    purchasesCursor?: number,
+    awardsCursor?: number,
+  ) {
+    const results = 3;
+    let awards = [];
+    let purchases = [];
+    if(awardsCursor != 1){
+      awards = await this.findAwards(id, results, awardsCursor);
+    }
+    if(purchasesCursor != 1){
+      purchases = await this.findPurchases(id, results, purchasesCursor);
+    }
+    // take the last 10 form both, using the cursor
+    // Unify and find the latest 10
+    let data = [...purchases, ...awards];
 
-  findPurchases(id: number) {
-    return this.prisma.purchase.findMany({
-      where: {
-        userId: id,
-      },
+    // Order by date
+    data.sort(function (a, b) {
+      return +b.createdAt - +a.createdAt;
     });
+
+    data = data.slice(0, results);
+
+    // Return the both the updated cursor and the result
+    let nextPurchaseCursor: number | null;
+    let nextAwardsCursor: number | null;
+    // from the last to the first
+    for (let i = data.length - 1 ; i >= 0; i--) {
+      // if contain shop is a Purchase while if contain award is an AwardUser
+      // Check if contains prop 'award'
+      if (nextAwardsCursor == null && Object.hasOwn(data[i] , 'award')) {
+        nextAwardsCursor = data[i].id;
+      }
+      // Check if contains prop 'shop'
+      if (nextPurchaseCursor == null && Object.hasOwn(data[i], 'shop')) {
+        nextPurchaseCursor = data[i].id;
+      }
+    }
+    nextPurchaseCursor ??= purchasesCursor;
+    nextAwardsCursor ??= awardsCursor;
+    return {
+      purchasesCursor: nextPurchaseCursor,
+      awardsCursor: nextAwardsCursor,
+      data: data,
+    };
   }
 
-  findAchieveds(id: number) {
-    return this.prisma.award.findMany({
-      where: {
-        users: {
-          some: {
-            user: {
-              id: id,
+  findPurchases(id: number, number: number, purchasesCursor?: number) {
+    return purchasesCursor == null
+      ? this.prisma.purchase.findMany({
+          take: number,
+          where: {
+            userId: id,
+          },
+          select: {
+            id: true,
+            createdAt: true,
+            points: true,
+            shop: {
+              select: {
+                name: true,
+                user: {
+                  select: {
+                    avatar: true,
+                  },
+                },
+              },
             },
           },
-        },
-      },
-    });
+          orderBy: {
+            id: 'desc',
+          },
+        })
+      : this.prisma.purchase.findMany({
+          take: number,
+          skip: 1, // Skip the cursor
+          cursor: {
+            id: +purchasesCursor,
+          },
+          where: {
+            userId: id,
+          },
+          select: {
+            id: true,
+            createdAt: true,
+            points: true,
+            shop: {
+              select: {
+                name: true,
+                user: {
+                  select: {
+                    avatar: true,
+                  },
+                },
+              },
+            },
+          },
+          orderBy: {
+            id: 'desc',
+          },
+        });
+  }
+
+  findAwards(id: number, number: number, awardsCursor?: number) {
+    return awardsCursor == null
+      ? this.prisma.awardUser.findMany({
+          take: number,
+          where: {
+            userId: id,
+          },
+          select: {
+            id: true,
+            createdAt: true,
+            award: {
+              select: {
+                title: true,
+                cost: true,
+              },
+            },
+          },
+          orderBy: {
+            id: 'desc',
+          },
+        })
+      : this.prisma.awardUser.findMany({
+          take: number,
+          skip: 1, // Skip the cursor
+          cursor: {
+            id: +awardsCursor,
+          },
+          where: {
+            userId: id,
+          },
+          select: {
+            id: true,
+            createdAt: true,
+            award: {
+              select: {
+                title: true,
+                cost: true,
+              },
+            },
+          },
+          orderBy: {
+            id: 'desc',
+          },
+        });
   }
 }

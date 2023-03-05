@@ -1,8 +1,5 @@
 # API Docs
 
-Version v0.0.0-test
-
-
 # Index
 
 - Structure

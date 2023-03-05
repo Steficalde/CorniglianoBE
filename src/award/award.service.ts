@@ -10,22 +10,13 @@ import { PrismaService } from '../prisma/prisma.service';
 export class AwardService {
   constructor(private prisma: PrismaService) {}
   async create(createAwardDto: CreateAwardDto) {
-    let award: Award;
-    try {
-      award = await this.prisma.award.create({
-        data: {
-          title: createAwardDto.title,
-          description: createAwardDto.description,
-          quantity: createAwardDto.quantity,
-        },
-      });
-    } catch (error) {
-      if (error.code === 'P2002') {
-        throw new ForbiddenException('Credentials taken');
-      }
-      throw error;
-    }
-    return award;
+    await this.prisma.award.create({
+      data: {
+        title: createAwardDto.title,
+        description: createAwardDto.description,
+        quantity: createAwardDto.quantity,
+      },
+    });
   }
 
   findAll() {

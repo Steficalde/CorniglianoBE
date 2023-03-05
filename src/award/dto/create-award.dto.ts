@@ -1,11 +1,13 @@
-import {IsNotEmpty, IsNumber, IsString} from "class-validator";
+import { IsNotEmpty, IsNumber, IsOptional, IsString } from "class-validator";
 
 export class CreateAwardDto {
   @IsString()
   @IsNotEmpty()
   title: string;
   @IsString()
-  description: string;
+  @IsOptional()
+  description?: string;
   @IsNumber()
-  quantity: number;
+  @IsOptional()
+  quantity?: number;
 }
