@@ -1,8 +1,8 @@
 import {
   IsEmail,
   IsNotEmpty,
-  IsString,
-} from 'class-validator';
+  IsString, MaxLength
+} from "class-validator";
 
 export class AuthDto {
   @IsEmail()

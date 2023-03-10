@@ -6,7 +6,7 @@ import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import { UserService } from '../user/user.service';
 import { CreateUserDto } from '../user/dto/create-user.dto';
-import { User } from '@prisma/client';
+import { Tokens } from "./types";
 
 @Injectable()
 export class AuthService {
@@ -16,23 +16,24 @@ export class AuthService {
     private config: ConfigService,
     private userService: UserService,
   ) {}
-  async signup(createUserDto: CreateUserDto) {
+  async signup(createUserDto: CreateUserDto): Promise<Tokens> {
     const user = await this.userService.create(createUserDto);
+    // @ts-ignore
     return this.signToken(user.id, user.email);
   }
 
-  async signin(dto: AuthDto) {
+  async signin(authDto: AuthDto) {
     const user = await this.prisma.user.findUnique({
       where: {
-        email: dto.email,
+        email: authDto.email,
       },
     });
 
-    if (!user) throw new ForbiddenException('credential incorrect!');
+    if (!user) throw new ForbiddenException('Credential incorrect!');
 
-    const pwMatches = await argon.verify(user.hash, dto.password);
+    const pwMatches = await argon.verify(user.hash, authDto.password);
 
-    if (!pwMatches) throw new ForbiddenException('credential incorrect!');
+    if (!pwMatches) throw new ForbiddenException( 'Credential incorrect!');
 
     return this.signToken(user.id, user.email);
   }
@@ -53,5 +54,13 @@ export class AuthService {
     return {
       access_token: token,
     };
+  }
+
+  logout() {
+
+  }
+
+  refreshTokens() {
+
   }
 }

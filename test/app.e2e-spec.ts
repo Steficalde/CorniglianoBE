@@ -45,6 +45,9 @@ describe('App', () => {
     await prisma.$queryRawUnsafe(
       `TRUNCATE TABLE "purchases" RESTART IDENTITY CASCADE;`,
     );
+    await prisma.$queryRawUnsafe(
+      `TRUNCATE TABLE "friends" RESTART IDENTITY CASCADE;`,
+    );
 
     pactum.request.setBaseUrl('http://localhost:3000');
   });
@@ -60,17 +63,16 @@ describe('App', () => {
   describe('Auth', () => {
     const dto: AuthDto = {
       email: 'first@test.com',
-      password: '123',
+      password: 'Difficile12',
+    };
+    const createUserDto: CreateUserDto = {
+      name: 'firsttest',
+      email: 'first@test.com',
+      password: 'Difficile12',
+      passwordConfirm: 'Difficile12',
     };
     describe('Signup', () => {
-      it('Should signup', () => {
-        return pactum
-          .spec()
-          .post('/auth/signup')
-          .withJson(dto)
-          .expectStatus(201);
-      });
-      it('Should throw if email empty', () => {
+      it('throw if email empty', () => {
         return pactum
           .spec()
           .post('/auth/signup')
@@ -79,7 +81,7 @@ describe('App', () => {
           })
           .expectStatus(400);
       });
-      it('Should throw if password empty', () => {
+      it('throw if password empty', () => {
         return pactum
           .spec()
           .post('/auth/signup')
@@ -88,13 +90,37 @@ describe('App', () => {
           })
           .expectStatus(400);
       });
-      it('Should throw if no body', () => {
+      it('throw if password not match', () => {
+        return pactum
+          .spec()
+          .post('/auth/signup')
+          .withJson({
+            name: createUserDto.name,
+            email: createUserDto.email,
+            password: 'Difficile12',
+            passwordConfirm: 'Difficile12$',
+          })
+          .expectJson({
+            statusCode: 400,
+            message: ['Confirm must match password exactly'],
+            error: 'Bad Request',
+          })
+          .expectStatus(400);
+      });
+      it('throw if no body', () => {
         return pactum.spec().post('/auth/signup').expectStatus(400);
+      });
+      it('signup', () => {
+        return pactum
+          .spec()
+          .post('/auth/signup')
+          .withJson(createUserDto)
+          .expectStatus(201);
       });
     });
 
     describe('Signin', () => {
-      it('Should signin', () => {
+      it('signin', () => {
         return pactum
           .spec()
           .post('/auth/signin')
@@ -102,7 +128,7 @@ describe('App', () => {
           .expectStatus(200)
           .stores('userAt', 'access_token');
       });
-      it('Should throw if email empty', () => {
+      it('throw if email empty', () => {
         return pactum
           .spec()
           .post('/auth/signin')
@@ -111,7 +137,7 @@ describe('App', () => {
           })
           .expectStatus(400);
       });
-      it('Should throw if password empty', () => {
+      it('throw if password empty', () => {
         return pactum
           .spec()
           .post('/auth/signin')
@@ -120,7 +146,7 @@ describe('App', () => {
           })
           .expectStatus(400);
       });
-      it('Should throw if no body', () => {
+      it('throw if no body', () => {
         return pactum.spec().post('/auth/signin').expectStatus(400);
       });
     });
@@ -128,11 +154,11 @@ describe('App', () => {
 
   // User
   describe('User', () => {
-    it('Should edit current user', async () => {
+    it('edit current user', async () => {
       const dto: UpdateUserDto = {
         email: 'second@test.com',
       };
-      const user: User = await prisma.user.findUnique({
+      await prisma.user.findUnique({
         where: {
           email: 'first@test.com',
         },
@@ -146,18 +172,32 @@ describe('App', () => {
         .withJson(dto)
         .expectStatus(200);
     });
+    it('Create second user', async () => {
+      const createUserDto: CreateUserDto = {
+          name: 'SecondUser',
+          email: 'second@gmmail.com',
+          password: 'StrongPSw12',
+          passwordConfirm: 'StrongPSw12',
+      }
+       return pactum
+        .spec()
+        .post('/users')
+        .withJson(createUserDto)
+        .expectStatus(201);
+    })
   });
 
   // Shop
   describe('Shop', () => {
     it('Create', () => {
       const createUserDto: CreateUserDto = {
+        name: 'ShopUnoo',
         email: 'first@shop.com',
-        password: 'password',
+        password: 'passwordQQ123%%',
+        passwordConfirm: 'passwordQQ123%%',
       };
       const createShopDto: CreateShopDto = {
         address: 'First Shop address',
-        name: 'FirstShop',
         description: 'First shop desd',
       };
       return pactum
@@ -165,6 +205,12 @@ describe('App', () => {
         .post('/shops')
         .withJson({ ...createUserDto, ...createShopDto })
         .expectStatus(201);
+    });
+    it('List first page', () => {
+      return pactum.spec().get('/shops').expectStatus(200);
+    });
+    it('List second page', () => {
+      return pactum.spec().get('/shops?cursor=2').expectStatus(200);
     });
   });
 
@@ -174,7 +220,7 @@ describe('App', () => {
       it('Create award 1', () => {
         const createAwardDto: CreateAwardDto = {
           title: 'Award 1',
-          quantity:100,
+          quantity: 100,
         };
         return pactum
           .spec()
@@ -205,7 +251,7 @@ describe('App', () => {
         .post('/purchases')
         .withJson({
           userId: 1,
-          shopId: 2,
+          shopId: 3,
           points: 10,
         })
         .expectStatus(201);
@@ -216,7 +262,7 @@ describe('App', () => {
         .post('/purchases')
         .withJson({
           userId: 1,
-          shopId: 2,
+          shopId: 3,
           points: 30,
         })
         .expectStatus(201);
@@ -227,7 +273,7 @@ describe('App', () => {
         .post('/purchases')
         .withJson({
           userId: 1,
-          shopId: 2,
+          shopId: 3,
           points: 50,
         })
         .expectStatus(201);
@@ -238,7 +284,7 @@ describe('App', () => {
         .post('/purchases')
         .withJson({
           userId: 1,
-          shopId: 2,
+          shopId: 3,
           points: 90,
         })
         .expectStatus(201);
@@ -277,31 +323,46 @@ describe('App', () => {
         })
         .expectStatus(201);
     });
-  })
+  });
 
   // Transaction
   describe('Transaction', () => {
     it('Show first page of transaction', async () => {
-      return pactum
-        .spec()
-        .get('/users/1/transactions?purchasesCursor=4')
-        .expectStatus(200).inspect();
+      return pactum.spec().get('/users/1/transactions').expectStatus(200);
     });
     it('Show second page of transaction', async () => {
-    return pactum
-      .spec()
-      .get('/users/1/transactions?purchasesCursor=4&awardsCursor=1')
-      .expectStatus(200);
+      return pactum
+        .spec()
+        .get('/users/1/transactions?purchasesCursor=3&awardsCursor=3')
+        .expectStatus(200);
     });
     it('Show third page of transaction', async () => {
-    return pactum
-      .spec()
-      .get('/users/1/transactions?purchasesCursor=1&awardsCursor=1')
-      .expectStatus(200);
+      return pactum
+        .spec()
+        .get('/users/1/transactions?purchasesCursor=1&awardsCursor=1')
+        .expectStatus(200);
     });
   });
 
-
-
-
+  describe('Friend', () => {
+    it('Send friend req from st user to nd user', () => {
+      return pactum
+        .spec()
+        .post('/friends')
+        .withJson({
+          userId: 1,
+          friendId: 2
+        }).expectStatus(201);
+    })
+    it('Accept friend req from st user', () => {
+      return pactum
+        .spec()
+        .patch('/friends/1')
+        .withJson({
+          userId: 1,
+          friendId: 2,
+          verifiedAt: true
+        }).expectStatus(200);
+    })
+  })
 });

@@ -36,7 +36,7 @@ export class UserController {
     return this.userService.remove(+id);
   }
 
-  @Get(':id/transactions/')
+  @Get(':id/transactions')
   findTransactions(
     @Param('id') id: number,
     @Query('purchasesCursor') purchasesCursor?: number,

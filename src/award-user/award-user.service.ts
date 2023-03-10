@@ -15,7 +15,7 @@ export class AwardUserService {
     });
     if (award.quantity >= 1) {
       //decremento
-      this.prisma.award.update({
+      await this.prisma.award.update({
         where: {
           id: createAwardUserDto.awardId,
         },
@@ -26,7 +26,7 @@ export class AwardUserService {
         },
       });
       //creo il riscatto
-      this.prisma.awardUser.create({
+      await this.prisma.awardUser.create({
         data: {
           userId: createAwardUserDto.userId,
           awardId: createAwardUserDto.awardId,

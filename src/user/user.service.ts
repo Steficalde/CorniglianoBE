@@ -4,8 +4,6 @@ import { PrismaService } from '../prisma/prisma.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import * as argon from 'argon2';
 import { User } from '@prisma/client';
-import { Purchase } from '../purchase/entities/purchase.entity';
-import { Award } from '../award/entities/award.entity';
 
 @Injectable()
 export class UserService {
@@ -24,6 +22,7 @@ export class UserService {
     try {
       user = await this.prisma.user.create({
         data: {
+          name: createUserDto.name,
           email: createUserDto.email,
           hash,
         },
@@ -38,18 +37,26 @@ export class UserService {
   }
 
   async update(id: number, updateUserDto: UpdateUserDto) {
-    this.prisma.user.update({
-      where: {
-        id: id,
-      },
-      data: {
-        email: updateUserDto.email,
-        hash:
-          updateUserDto.password != null
-            ? await argon.hash(updateUserDto.password)
-            : undefined,
-      },
-    });
+    try {
+      this.prisma.user.update({
+        where: {
+          id: id,
+        },
+        data: {
+          name: updateUserDto.name,
+          email: updateUserDto.email,
+          hash:
+            updateUserDto.password != null
+              ? await argon.hash(updateUserDto.password)
+              : undefined,
+        },
+      });
+    } catch (error) {
+      if (error.code === 'P2002') {
+        throw new ForbiddenException('Email taken');
+      }
+      throw error;
+    }
   }
 
   remove(id: number) {
@@ -123,9 +130,9 @@ export class UserService {
             points: true,
             shop: {
               select: {
-                name: true,
                 user: {
                   select: {
+                    name: true,
                     avatar: true,
                   },
                 },
@@ -151,9 +158,9 @@ export class UserService {
             points: true,
             shop: {
               select: {
-                name: true,
                 user: {
                   select: {
+                    name: true,
                     avatar: true,
                   },
                 },

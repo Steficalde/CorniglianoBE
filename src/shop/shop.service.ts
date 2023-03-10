@@ -23,7 +23,6 @@ export class ShopService {
         address: createShopDto.address,
         googleMaps: createShopDto.googleMaps,
         description: createShopDto.description,
-        name: createShopDto.name,
       },
     });
   }
@@ -33,15 +32,16 @@ export class ShopService {
     const data =
       cursor == null
         ? await this.prisma.shop.findMany({
+
             take: results,
             where: {
               isActive: true,
             },
             select: {
               id: true,
-              name: true,
               user: {
                 select: {
+                  name: true,
                   avatar: true,
                 },
               },
@@ -61,9 +61,9 @@ export class ShopService {
             },
             select: {
               id: true,
-              name: true,
               user: {
                 select: {
+                  name: true,
                   avatar: true,
                 },
               },
@@ -73,9 +73,8 @@ export class ShopService {
             },
           });
 
-
     return {
-      cursor: data[data.length - 1].id,
+      cursor: data[data.length - 1]?.id ?? 1,
       data: data,
     }
   }
@@ -102,7 +101,6 @@ export class ShopService {
         googleMaps: updateShopDto.googleMaps,
         isActive: updateShopDto.isActive,
         description: updateShopDto.description,
-        name: updateShopDto.name,
       },
     });
     await this.userService.update(id, updateUserDto);

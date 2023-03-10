@@ -10,9 +10,7 @@ export class CreateShopDto {
   @IsString()
   @IsOptional()
   googleMaps?: string;
-  @IsString()
-  @IsNotEmpty()
-  name: string;
+
   @IsString()
   @IsOptional()
   description?: string;

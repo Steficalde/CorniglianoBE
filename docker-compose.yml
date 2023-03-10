@@ -1,24 +1,38 @@
 version: '3.8'
 services:
-  dev-db:
-    image: postgres:13
+  app:
+    container_name: app
+    build: .
     ports:
-      - 5434:5432
+      - "3000:3000"
+    depends_on:
+      - db
+  db:
+    image: postgres:13
+    container_name: db
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./postgresdata:/var/lib/postgresql/data
+    restart: always
     environment:
       POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: 123
-      POSTGRES_DB: nest
-    networks:
-      - civ-cornigliano
-  test-db:
-    image: postgres:13
-    ports:
-      - 5435:5432
-    environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: 123
-      POSTGRES_DB: shadow_nest
-    networks:
-      - civ-cornigliano
-networks:
-  civ-cornigliano:
+      POSTGRES_PASSWORD: Civ2023
+      POSTGRES_DB: civ
+#  pgadmin:
+#    container_name: pgadmin
+#    image: dpage/pgadmin4:latest
+#    restart: always
+#    environment:
+#      PGADMIN_DEFAULT_EMAIL: civ@example.com
+#      PGADMIN_DEFAULT_PASSWORD: Civ2023
+#      PGADMIN_LISTEN_PORT: 80
+#    ports:
+#      - "8080:80"
+#    volumes:
+#      - pgadmin-data:/var/lib/pgadmin
+#    depends_on:
+#        - db
+volumes:
+    db-data:
+#    pgadmin-data:

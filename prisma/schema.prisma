@@ -17,8 +17,8 @@ model Award {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  title       String
-  description String?
+  title       String      @db.VarChar(255)
+  description String?     @db.VarChar(2000)
   quantity    Int         @default(0)
   cost        Int         @default(100)
   users       AwardUser[]
@@ -44,26 +44,31 @@ model Shop {
   id          Int        @id
   user        User       @relation(fields: [id], references: [id])
   isActive    Boolean    @default(true)
-  name        String
-  description String?
-  address     String?
-  googleMaps  String?
+  description String?    @db.VarChar(2000)
+  address     String?    @db.VarChar(255)
+  googleMaps  String?    @db.VarChar(2000)
   purchases   Purchase[]
 
   @@map("shops")
 }
 
 model User {
-  id        Int      @id @default(autoincrement())
-  email     String   @unique
-  hash      String
-  avatar    String?
+  id       Int     @id @default(autoincrement())
+  googleId Int?
+  name     String  @unique @db.VarChar(50)
+  email    String  @unique @db.VarChar(255)
+  hash     String  @db.VarChar(255)
+  hashedRt String? @db.VarChar(255)
+  avatar   String? @db.VarChar(255)
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   awards    AwardUser[]
   purchases Purchase[]
-  Shop      Shop[]
+  shop      Shop[]
+  user      Friend[]    @relation("user")
+  friend    Friend[]    @relation("friend")
 
   @@map("users")
 }
@@ -81,4 +86,18 @@ model AwardUser {
   award   Award @relation(fields: [awardId], references: [id])
 
   @@map("award_user")
+}
+
+model Friend {
+  id     Int  @id @default(autoincrement())
+  userId Int
+  user   User @relation("user", fields: [userId], references: [id])
+
+  friendId Int
+  friend   User @relation("friend", fields: [friendId], references: [id])
+
+  createdAt  DateTime  @default(now())
+  verifiedAt DateTime?
+
+  @@map("friends")
 }

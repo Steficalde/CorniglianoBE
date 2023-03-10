@@ -5,6 +5,8 @@ import {
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { AuthDto } from './dto';
+import { CreateUserDto } from "../user/dto/create-user.dto";
+import { Tokens } from "./types";
 
 @Controller('auth')
 export class AuthController {
@@ -12,15 +14,27 @@ export class AuthController {
   // private equal to declare out of the const and after this.x = x
   constructor(private authService: AuthService) {}
 
-  @HttpCode(HttpStatus.OK)
-  @Post('signin')
-  signin(@Body() dto: AuthDto) {
-    return this.authService.signin(dto);
+  @Post("signup")
+  signup(@Body() createUserDto: CreateUserDto): Promise<Tokens> {
+    // nextjs know daatype
+    return this.authService.signup(createUserDto);
   }
 
-  @Post('signup')
-  signup(@Body() dto: AuthDto) {
-    // nextjs know daatype
-    return this.authService.signup(dto);
+  @HttpCode(HttpStatus.OK)
+  @Post('signin')
+  signin(@Body() authDto: AuthDto) {
+    return this.authService.signin(authDto);
+  }
+
+  @HttpCode(HttpStatus.OK)
+  @Post('logout')
+  logout() {
+    return this.authService.logout();
+  }
+
+  @HttpCode(HttpStatus.OK)
+  @Post('refresh')
+  refreshTokens() {
+    return this.authService.refreshTokens();
   }
 }

@@ -7,7 +7,7 @@ import { ShopModule } from './shop/shop.module';
 import { PurchaseModule } from './purchase/purchase.module';
 import { AwardModule } from './award/award.module';
 import { AwardUserModule } from './award-user/award-user.module';
-import {TestModule} from "./test/test.module";
+import { FriendsModule } from './friends/friends.module';
 
 @Module({
   imports: [
@@ -21,7 +21,7 @@ import {TestModule} from "./test/test.module";
     PurchaseModule,
     AwardModule,
     AwardUserModule,
-    TestModule,
+    FriendsModule,
   ],
 })
 export class AppModule {}
